@@ -50,8 +50,12 @@ enum AdjacentDesktop
 	LeftDirection = 3,
 	RightDirection = 4
 };
-
-MIDL_INTERFACE("AF8DA486-95BB-4460-B3B7-6E7A6B2962B5")
+//10240
+//MIDL_INTERFACE("AF8DA486-95BB-4460-B3B7-6E7A6B2962B5")
+//unknown build
+//MIDL_INTERFACE("AF8DA486-95BB-4460-B3B7-6E7A6B2962B5")
+//15063
+MIDL_INTERFACE("f31574d6-b682-4cdc-bd56-1827860abec6")
 IVirtualDesktopManagerInternal : public IUnknown
 {
 public:
