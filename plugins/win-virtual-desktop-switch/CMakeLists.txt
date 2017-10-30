@@ -13,6 +13,7 @@ set(win-decklink_HEADERS
 
 set(win-decklink_SOURCES
 	plugin-main.cpp
+	win-virt-desktop.cpp
 	)
 
 # add_idl_files(win-decklink-sdk_GENERATED_FILES

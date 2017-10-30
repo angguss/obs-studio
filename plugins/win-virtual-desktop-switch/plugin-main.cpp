@@ -1,6 +1,8 @@
 #include <obs-module.h>
+#include <objbase.h>
 
 #include "win-virt-desktop.h"
+
 
 #define PLUGIN_NAME "win-virtual-desktop-switch"
 
@@ -16,13 +18,36 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 static void *win_virt_create(obs_data_t *settings, obs_source_t *source)
 {
-	WinVirtDesktopDetector *winvirt = new WinVirtDesktopDetector();
+	WinVirtDesktop *winvirt = new WinVirtDesktop();
+
+	// Let's do some COM stuff
+	// Initialize COM interface. Does OBS already do this elsewhere?
+	::CoInitialize(NULL);
+	IServiceProvider *pServiceProvider = nullptr;
+
+	HRESULT hr = ::CoCreateInstance(CLSID_ImmersiveShell, NULL, CLSCTX_LOCAL_SERVER,
+		__uuidof(IServiceProvider), (PVOID*)&pServiceProvider);
+
+	winvirt->pServiceProvider = pServiceProvider;
+
+	if (SUCCEEDED(hr))
+	{
+		IVirtualDesktopManagerInternal* pDesktopManagerInternal = nullptr;
+		hr = pServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown,
+			&pDesktopManagerInternal);
+
+		if (SUCCEEDED(hr))
+		{
+			
+		}
+	}
+
 	return winvirt;
 }
 
 static void win_virt_destroy(void *data)
 {
-	WinVirtDesktopDetector *winvirt = (WinVirtDesktopDetector*)data;
+	WinVirtDesktop *winvirt = (WinVirtDesktop*)data;
 	delete winvirt;
 }
 
