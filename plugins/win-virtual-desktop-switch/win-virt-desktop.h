@@ -104,16 +104,19 @@ protected:
 	std::string currentDesktopId;
 	std::string chosenDesktopId;
 	std::vector<std::string> desktops;
-
 	// Fill our desktops vector with data
-	void EnumDesktops();
+	void EnumVirtualDesktops();
 
 	// This can be public for now, we'll sort it out properly later
 public:
 	IServiceProvider *pServiceProvider = nullptr;
 	IVirtualDesktopManagerInternal *pDesktopManagerInternal = nullptr;
 
+	// Get the list
+	std::vector<std::string> &GetDesktops();
+	
 	unsigned int GetDesktopCount();
+
 	WinVirtDesktop();
 	~WinVirtDesktop();
 

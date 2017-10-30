@@ -28,17 +28,17 @@ static void *win_virt_create(obs_data_t *settings, obs_source_t *source)
 	HRESULT hr = ::CoCreateInstance(CLSID_ImmersiveShell, NULL, CLSCTX_LOCAL_SERVER,
 		__uuidof(IServiceProvider), (PVOID*)&pServiceProvider);
 
-	winvirt->pServiceProvider = pServiceProvider;
-
 	if (SUCCEEDED(hr))
 	{
+		winvirt->pServiceProvider = pServiceProvider;
+
 		IVirtualDesktopManagerInternal* pDesktopManagerInternal = nullptr;
 		hr = pServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown,
 			&pDesktopManagerInternal);
 
 		if (SUCCEEDED(hr))
 		{
-			
+			winvirt->pDesktopManagerInternal = pDesktopManagerInternal;
 		}
 	}
 
@@ -48,6 +48,7 @@ static void *win_virt_create(obs_data_t *settings, obs_source_t *source)
 static void win_virt_destroy(void *data)
 {
 	WinVirtDesktop *winvirt = (WinVirtDesktop*)data;
+	// This will clearup leftover COM stuff
 	delete winvirt;
 }
 
@@ -66,6 +67,8 @@ static bool win_virt_desktop_changed(obs_properties_t *props,
 
 static obs_properties_t *win_virt_get_properties(void *data)
 {
+	WinVirtDesktop *winvirt = (WinVirtDesktop*)data;
+
 	obs_properties_t *props = obs_properties_create();
 
 	obs_property_t *list = obs_properties_add_list(props, "desktop_id",
@@ -73,7 +76,11 @@ static obs_properties_t *win_virt_get_properties(void *data)
 		OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 	obs_property_set_modified_callback(list, win_virt_desktop_changed);
 
-	obs_property_list_add_string(list, "desktop1", "Desktop1guid");
+	std::vector<std::string> &desktops = winvirt->GetDesktops();
+	for (auto it = desktops.begin(), end = desktops.end(); it != end; it++)
+		obs_property_list_add_string(list, (*it).c_str(), (*it).c_str());
+
+	//obs_property_list_add_string(list, "desktop1", "Desktop1guid");
 
 	obs_properties_add_bool(props, "use_cur_desktop", "Just use whatever desktop OBS is on");
 

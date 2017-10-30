@@ -15,8 +15,17 @@ std::string GuidToString(const GUID &guid)
 	return WStringToUTF8(guidStr);
 }
 
-void WinVirtDesktop::EnumDesktops()
+std::vector<std::string> &WinVirtDesktop::GetDesktops()
 {
+	EnumVirtualDesktops();
+	return desktops;
+}
+
+void WinVirtDesktop::EnumVirtualDesktops()
+{
+	if (pDesktopManagerInternal == nullptr)
+		return;
+
 	IObjectArray *pObjectArray = nullptr;
 	HRESULT hr = pDesktopManagerInternal->GetDesktops(&pObjectArray);
 
